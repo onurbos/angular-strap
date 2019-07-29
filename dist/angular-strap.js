@@ -2850,6 +2850,7 @@
           yy: '[0-9]{2}',
           y: options.strict ? '-?(0|[1-9][0-9]{0,3})' : '-?0*[0-9]{1,4}'
         };
+        var currentFullYear = undefined;
         var setFnMap = {
           sss: proto.setMilliseconds,
           ss: proto.setSeconds,
@@ -2882,7 +2883,8 @@
           },
           yyyy: proto.setFullYear,
           yy: function(value) {
-            return this.setFullYear(2e3 + 1 * value);
+            return currentFullYear ? this.setFullYear(currentFullYear) : this.setFullYear(2e3 + 1 * value);
+           // return this.setFullYear(2e3 + 1 * value);
           },
           y: function(value) {
             return 1 * value <= 50 && value.length === 2 ? this.setFullYear(2e3 + 1 * value) : this.setFullYear(1 * value);
@@ -2900,6 +2902,7 @@
           return regex.test(date);
         };
         $dateParser.parse = function(value, baseDate, format, timezone) {
+          currentFullYear = value.getFullYear();
           if (format) format = $locale.DATETIME_FORMATS[format] || format;
           if (angular.isDate(value)) value = dateFilter(value, format || $dateParser.$format, timezone);
           var formatRegex = format ? regExpForFormat(format) : regex;
